@@ -1,4 +1,4 @@
-package main
+package awsswitch
 
 import (
 	"bufio"
@@ -193,7 +193,8 @@ func (c *SwCommand) Run(args []string) int {
 	return 0
 }
 
-func main() {
+// Run the awsswitch
+func Run() int {
 	u, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
@@ -215,7 +216,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("Failed to execute: %s\n", err.Error())
 	}
-	os.Exit(exitCode)
+	return exitCode
 }
 
 // LoadCredentials parses AWS credentials file
