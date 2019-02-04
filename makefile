@@ -4,16 +4,20 @@ ARCH := $(shell go env GOARCH)
 GOPATH := $(shell go env GOPATH)
 GOBIN := $(GOPATH)/bin
 
-default: build test
+setup:
+	go get -u golang.org/x/vgo
+	vgo install
 
 build:
 	go fmt ./...
 	GOOS=$(PLATFORM) GOARCH=$(GOARCH) vgo build -o awsswitch
 
-install:
-	#TODO
+analysis: setup
+	vgo vet ./...
+	vgo get -u golang.org/x/lint/golint
+	golint -set_exit_status $$(vgo list ./... | grep -v /vendor/)
 
-test:
+test: setup
 	vgo test -race ./...
 
-.PHONY: build install test run
+.PHONY: setup build analysis test

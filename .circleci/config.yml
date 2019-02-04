@@ -1,0 +1,55 @@
+version: 2.1
+executors:
+  default:
+    working_directory: /go/src/github.com/okamos/go-aws-profile-switch
+    docker:
+      - image: circleci/golang:1.11.5
+        environment:
+          GOCACHE: "/tmp/go/cache"
+commands:
+  restore_go_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - gocache-{{ .Branch }}
+            - gocache
+  save_go_cache:
+    steps:
+      - save_cache:
+          key: gocache-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /tmp/go/cache
+
+jobs:
+  analysis:
+    executor: default
+    steps:
+      - checkout
+      - restore_go_cache
+      - run: make analysis
+  test:
+    executor: default
+    steps:
+      - checkout
+      - restore_go_cache
+      - run: make test
+      - save_go_cache
+  build:
+    executor: default
+    steps:
+      - checkout
+      - restore_go_cache
+      - run: curl -sL https://git.io/goreleaser | bash
+      - run: goreleaser
+workflows:
+  version: 2
+  flow:
+    jobs:
+      - analysis
+      - test
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/

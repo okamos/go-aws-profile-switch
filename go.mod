@@ -12,5 +12,7 @@ require (
 	github.com/mitchellh/cli v1.0.0
 	github.com/nsf/termbox-go v0.0.0-20190121233118-02980233997d
 	github.com/posener/complete v1.2.1
+	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	golang.org/x/sys v0.0.0-20190204103248-980327fe3c65 // indirect
+	golang.org/x/tools v0.0.0-20190202235157-7414d4c1f71c // indirect
 )
