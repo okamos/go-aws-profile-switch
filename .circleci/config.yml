@@ -6,6 +6,7 @@ executors:
       - image: circleci/golang:1.11.5
         environment:
           GOCACHE: "/tmp/go/cache"
+          GO111MODULE: "on"
 commands:
   restore_go_cache:
     steps:
