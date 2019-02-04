@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/cli"
+	"github.com/okamos/go-aws-profile-switch/ui"
 )
 
 const (
@@ -75,7 +76,10 @@ func (c *SwCommand) Help() string {
 
 // Run sw command
 func (c *SwCommand) Run(args []string) int {
-	var profile string
+	var (
+		profile string
+		err     error
+	)
 
 	flags := flag.NewFlagSet("sw", flag.ContinueOnError)
 	flags.Usage = func() { fmt.Println(swUsage) }
@@ -85,12 +89,15 @@ func (c *SwCommand) Run(args []string) int {
 	if err := flags.Parse(args); err != nil {
 		return 1
 	}
-	if profile == "" {
-		fmt.Println(swUsage)
-		return 1
-	}
-
 	credentials, comments := LoadCredentials()
+
+	if profile == "" {
+		profile, err = dynamicSwitch(credentials)
+		if err != nil {
+			log.Print(err)
+			return 1
+		}
+	}
 
 	var defaultKey string
 	candidate := map[string]string{}
@@ -105,6 +112,7 @@ func (c *SwCommand) Run(args []string) int {
 			candidate[outputName] = v[outputName]
 		}
 	}
+
 	if candidate["profile"] == "" {
 		fmt.Printf("The profile %s is not found\n", profile)
 		return 1
@@ -271,4 +279,15 @@ func getFile() *os.File {
 		log.Fatal(err)
 	}
 	return fp
+}
+
+func dynamicSwitch(credentials []map[string]string) (string, error) {
+	values := make([]string, 0)
+	for _, v := range credentials {
+		if v["profile"] != "default" {
+			values = append(values, v["profile"])
+		}
+	}
+	ui.InitSelector(values)
+	return ui.Select()
 }
