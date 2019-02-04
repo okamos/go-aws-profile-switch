@@ -137,40 +137,22 @@ func (c *SwCommand) Run(args []string) int {
 
 	var buf []byte
 	buf = append(buf, ("[default]\n")...)
-	fmt.Println("Your default profile is overwrote")
 	if candidate[keyName] != "" {
 		buf = append(buf, (keyName + "=" + candidate[keyName] + "\n")...)
-		fmt.Println("> " + keyName + "=" + candidate[keyName])
 	}
 	if candidate[secretName] != "" {
 		buf = append(buf, (secretName + "=" + candidate[secretName] + "\n")...)
-		fmt.Println("> " + secretName + "=" + candidate[secretName])
 	}
 	if candidate[regionName] != "" {
 		buf = append(buf, (regionName + "=" + candidate[regionName] + "\n")...)
-		fmt.Println("> " + regionName + "=" + candidate[regionName])
 	}
 	if candidate[outputName] != "" {
 		buf = append(buf, (outputName + "=" + candidate[outputName] + "\n")...)
-		fmt.Println("> " + outputName + "=" + candidate[outputName])
 	}
 	buf = append(buf, "\n"...)
 
 	for _, v := range credentials {
 		if v["profile"] == "default" {
-			fmt.Print("\nFrom\n")
-			if v[keyName] != "" {
-				fmt.Println("> " + keyName + "=" + v[keyName])
-			}
-			if v[secretName] != "" {
-				fmt.Println("> " + secretName + "=" + v[secretName])
-			}
-			if v[regionName] != "" {
-				fmt.Println("> " + regionName + "=" + v[regionName])
-			}
-			if v[outputName] != "" {
-				fmt.Println("> " + outputName + "=" + v[outputName])
-			}
 			continue
 		}
 		buf = append(buf, ("[" + v["profile"] + "]\n")...)
@@ -197,6 +179,7 @@ func (c *SwCommand) Run(args []string) int {
 	}
 	defer file.Close()
 	file.Write(buf)
+	fmt.Println("Your default profile is overwrote:", profile)
 
 	return 0
 }
