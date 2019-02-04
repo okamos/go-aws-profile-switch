@@ -5,19 +5,18 @@ GOPATH := $(shell go env GOPATH)
 GOBIN := $(GOPATH)/bin
 
 setup:
-	go get -u golang.org/x/vgo
-	vgo install
+	go mod download
 
 build:
 	go fmt ./...
 	GOOS=$(PLATFORM) GOARCH=$(GOARCH) vgo build -o awsswitch
 
 analysis: setup
-	vgo vet ./...
-	vgo get -u golang.org/x/lint/golint
+	go vet ./...
+	go get -u golang.org/x/lint/golint
 	golint -set_exit_status $$(vgo list ./... | grep -v /vendor/)
 
 test: setup
-	vgo test -race ./...
+	go test -race ./...
 
 .PHONY: setup build analysis test
